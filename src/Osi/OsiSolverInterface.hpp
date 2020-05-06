@@ -1347,6 +1347,12 @@ public:
 
   //@}
 
+  void setQuadraticObjective(const int numcols, const CoinBigIndex *start, 
+   const int *column, const double *element){}
+
+
+  void setQuadraticObjective(const int numcols, const int numQelements, const int *row, 
+    const int *column, const double *element){}
   //---------------------------------------------------------------------------
 
   /**@name Methods for problem input and output */
