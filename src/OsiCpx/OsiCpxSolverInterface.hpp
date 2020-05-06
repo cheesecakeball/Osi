@@ -256,6 +256,8 @@ public:
 	  "iteration" mean to the solver. */
   virtual int getIterationCount() const;
 
+  virtual int getNumNodes() const;
+
   /** Get as many dual rays as the solver can provide. (In case of proven
           primal infeasibility there should be at least one.)
 

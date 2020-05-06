@@ -2547,6 +2547,18 @@ void OsiGrbSolverInterface::deleteRows(const int num, const int *rowIndices)
 
   delete[] ind;
 }
+/*
+void OsiGrbSolverInterface::setQuadraticObjective(const int numcols, const int numQelements, const int *row, 
+    const int *column, const double *element)
+{
+  int *rowQ = const_cast<int *> (row);
+  int *colQ = const_cast <int *> (column);
+  double *elements = const_cast <double *> (element);
+  int numqz=numcols;
+  GUROBI_CALL("setQuadraticObjective", GRBupdatemodel(getMutableLpPtr()));
+  GUROBI_CALL("setQuadraticObjective", GRBaddqpterms(getMutableLpPtr(), numqz, rowQ, colQ, elements));
+}
+*/
 
 //#############################################################################
 // Methods to input a problem

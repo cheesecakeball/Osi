@@ -709,6 +709,8 @@ public:
     */
   virtual int getIterationCount() const = 0;
 
+  virtual int getNumNodes() const {return 0;}
+
   /** Get as many dual rays as the solver can provide. In case of proven
 	primal infeasibility there should (with high probability) be at least
 	one.
@@ -1346,13 +1348,14 @@ public:
   void deleteBranchingInfo(int numberDeleted, const int *which);
 
   //@}
-
+/*
   virtual void setQuadraticObjective(const int numcols, const CoinBigIndex *start, 
    const int *column, const double *element){}
 
 
   virtual void setQuadraticObjective(const int numcols, const int numQelements, const int *row, 
     const int *column, const double *element){}
+*/    
   //---------------------------------------------------------------------------
 
   /**@name Methods for problem input and output */

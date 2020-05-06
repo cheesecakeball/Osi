@@ -452,13 +452,13 @@ public:
   virtual void deleteRows(const int num, const int *rowIndices);
   //@}
   //@}
-
+  /*
   virtual void setQuadraticObjective(const int numcols, const CoinBigIndex *start, 
     const int *column, const double *element);
 
   virtual void setQuadraticObjective(const int numcols, const int numQelements, const int *row, 
     const int *column, const double *element);
-  
+  */
   //---------------------------------------------------------------------------
 
   /**@name Methods to input a problem */
@@ -912,11 +912,12 @@ private:
   int *colmap_O2G;
 
   /// Quadratic objective Information
+  /*
   int nzQ_;
   int *rowQ_;
   int *colQ_;
   double *elementQ_;
-
+*/
   /// Maps variable indices from Gurobi to Osi
   /// A negative value indicates that a variable is an auxiliary variable that was added to handle a ranged row
   /// -colmap_G2O[i]-1 gives the index of the ranged row in this case

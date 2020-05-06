@@ -1614,6 +1614,15 @@ std::vector< double * > OsiCpxSolverInterface::getDualRays(int maxNumRays,
   return std::vector< double * >(1, pi);
 }
 
+
+int OsiCpxSolverInterface::getNumNodes() const
+{
+  if (probtypemip_)
+    return CPXgetnodecnt(env_, getMutableLpPtr());
+  else
+    return 0;
+}
+
 //------------------------------------------------------------------
 std::vector< double * > OsiCpxSolverInterface::getPrimalRays(int maxNumRays) const
 {
