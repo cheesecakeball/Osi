@@ -1206,6 +1206,34 @@ int OsiSolverInterface::readMps(const char *filename,
   }
   return numberErrors;
 }
+
+/// Read from a quadratic MPS
+int OsiSolverInterface::readQuadraticMps(const char *filename,
+  const char *extension)
+{
+  CoinMpsIO mqp;
+  std::cout<<"debug1"<<std::endl;
+  CoinBigIndex *start=NULL;
+  int *column=NULL;
+  std::cout<<"debug2"<<std::endl;
+  double *element = NULL;
+  // If 1 checks lower triangular (so off diagonal should be 2*Q)
+  // if 2 makes lower triangular and assumes full Q (but adds off diagonals)
+  int checkSymmetry=2;
+  std::cout<<filename<<std::endl;
+  int numErrors=mqp.readQuadraticMps(filename, start, column, element, checkSymmetry);
+  std::cout<<numErrors<<std::endl;
+  int numcols=sizeof(element)/sizeof(element[0]);
+  if (!numErrors)
+  {
+    loadQuadraticObjective(numcols, start, column, element);
+  }
+  return numErrors;
+}
+
+
+
+
 /* Read a problem in GMPL format from the given filenames.
    
   Will only work if glpk installed

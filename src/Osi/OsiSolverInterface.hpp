@@ -1348,14 +1348,14 @@ public:
   void deleteBranchingInfo(int numberDeleted, const int *which);
 
   //@}
-/*
-  virtual void setQuadraticObjective(const int numcols, const CoinBigIndex *start, 
+
+  virtual void loadQuadraticObjective(const int numcols, const CoinBigIndex *start, 
    const int *column, const double *element){}
 
 
-  virtual void setQuadraticObjective(const int numcols, const int numQelements, const int *row, 
+  virtual void loadQuadraticObjective(const int numcols, const int numQelements, const int *row, 
     const int *column, const double *element){}
-*/    
+    
   //---------------------------------------------------------------------------
 
   /**@name Methods for problem input and output */
@@ -1499,6 +1499,9 @@ public:
     */
   virtual int readMps(const char *filename, const char *extension,
     int &numberSets, CoinSet **&sets);
+
+  virtual int readQuadraticMps(const char *filename,
+  const char *extension);
 
   /*! \brief Read a problem in GMPL format from the given filenames.
     

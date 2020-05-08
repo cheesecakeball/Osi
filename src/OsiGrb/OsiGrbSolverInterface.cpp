@@ -2547,18 +2547,35 @@ void OsiGrbSolverInterface::deleteRows(const int num, const int *rowIndices)
 
   delete[] ind;
 }
-/*
-void OsiGrbSolverInterface::setQuadraticObjective(const int numcols, const int numQelements, const int *row, 
+
+void OsiGrbSolverInterface::loadQuadraticObjective(const int numcols, const CoinBigIndex *start, 
+    const int *column, const double *element)
+{
+  //int numQelements=sizeof(element)/sizeof(element[0]);
+  int numQelements=start[numcols];
+  int *row=new int [numQelements];
+  int j=0;
+  for(int i=0; i<numQelements;i++){
+    if(i>=start[j+1]){
+      j++;
+    }
+    row[i]=j;
+  }
+  loadQuadraticObjective(numQelements, row, column, element);
+  delete[] row;
+}
+
+void OsiGrbSolverInterface::loadQuadraticObjective(const int numcols, const int numQelements, const int *row, 
     const int *column, const double *element)
 {
   int *rowQ = const_cast<int *> (row);
   int *colQ = const_cast <int *> (column);
   double *elements = const_cast <double *> (element);
   int numqz=numcols;
-  GUROBI_CALL("setQuadraticObjective", GRBupdatemodel(getMutableLpPtr()));
-  GUROBI_CALL("setQuadraticObjective", GRBaddqpterms(getMutableLpPtr(), numqz, rowQ, colQ, elements));
+  GUROBI_CALL("loadQuadraticObjective", GRBupdatemodel(getMutableLpPtr()));
+  GUROBI_CALL("loadQuadraticObjective", GRBaddqpterms(getMutableLpPtr(), numqz, rowQ, colQ, elements));
 }
-*/
+
 
 //#############################################################################
 // Methods to input a problem
