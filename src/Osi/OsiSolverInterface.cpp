@@ -1204,14 +1204,7 @@ int OsiSolverInterface::readMps(const char *filename,
       delete[] index;
     }
   }
-  return numberErrors;
-}
-
-/// Read from a quadratic MPS
-int OsiSolverInterface::readQuadraticMps(const char *filename,
-  const char *extension)
-{
-  CoinMpsIO mqp;
+  printf("Successfully read linear part of mps");
   std::cout<<"debug1"<<std::endl;
   CoinBigIndex *start=NULL;
   int *column=NULL;
@@ -1221,16 +1214,27 @@ int OsiSolverInterface::readQuadraticMps(const char *filename,
   // if 2 makes lower triangular and assumes full Q (but adds off diagonals)
   int checkSymmetry=2;
   std::cout<<filename<<std::endl;
-  int numErrors=mqp.readQuadraticMps(filename, start, column, element, checkSymmetry);
-  std::cout<<numErrors<<std::endl;
+  int numQPErrors=m.readQuadraticMps(NULL, start, column, element, checkSymmetry);
+  
   int numcols=sizeof(element)/sizeof(element[0]);
-  if (!numErrors)
+  std::cout<<"numofcols="<<numcols<<std::endl;
+  if (!numQPErrors)
   {
+    //std::cout<<"Start to load Quadratic objective"<< std::endl;
     loadQuadraticObjective(numcols, start, column, element);
   }
+  return numQPErrors;
+}
+/*
+/// Read from a quadratic MPS
+int OsiSolverInterface::readQuadraticMps(const char *filename,
+  const char *extension)
+{
+  CoinMpsIO mqp;
+  
   return numErrors;
 }
-
+*/
 
 
 
