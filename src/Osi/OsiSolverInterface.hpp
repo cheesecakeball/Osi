@@ -1349,11 +1349,11 @@ public:
 
   //@}
 
-  virtual void loadQuadraticObjective(const int numcols, const CoinBigIndex *start, 
+  virtual void loadQuadraticObjective(const CoinBigIndex *start, 
    const int *column, const double *element){}
 
 
-  virtual void loadQuadraticObjective(const int numcols, const int numQelements, const int *row, 
+  virtual void loadQuadraticObjective(const int numQelements, const int *row, 
     const int *column, const double *element){}
     
   //---------------------------------------------------------------------------

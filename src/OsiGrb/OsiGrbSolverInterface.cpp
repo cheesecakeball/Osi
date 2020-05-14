@@ -266,7 +266,7 @@ void OsiGrbSolverInterface::initialSolve()
   getHintParam(OsiDoPresolveInInitial, takeHint, strength);
   if (strength != OsiHintIgnore)
     presolve = takeHint ? GRB_PRESOLVE_AUTO : GRB_PRESOLVE_OFF;
-  GUROBI_CALL("initialSolve", GRBwrite(getMutableLpPtr(), "farmerlp2.mps"));
+  GUROBI_CALL("initialSolve", GRBwrite(lp, "farmerqp.mps"));
   GUROBI_CALL("initialSolve", GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, presolve));
 
   /* set whether output or not */
@@ -2558,16 +2558,25 @@ void OsiGrbSolverInterface::deleteRows(const int num, const int *rowIndices)
   delete[] ind;
 }
 
-void OsiGrbSolverInterface::loadQuadraticObjective(const int numcols, const CoinBigIndex *start, 
+void OsiGrbSolverInterface::loadQuadraticObjective(const CoinBigIndex *start, 
     const int *column, const double *element)
 {
   std::cout<<"Start to load Quadratic objective"<< std::endl;
-  int numQelements=sizeof(element)/sizeof(element[0]);
+  int numQelements=0;
+  for (int i=0; i<100000000;i++){
+    if(element[i]>-10000000000 && element[i] < 10000000000 && column[i]<=getNumCols() && column[i]>=0){
+      std::cout<<i<<" "<<element[i]<<std::endl;
+      numQelements++;
+    }
+    else{
+      break;
+    }
+  }
   std::cout << "number of quadratic elements is " << numQelements <<std::endl;
   int *row=new int [numQelements];
   int j=0;
   std::cout << "elements of start is " << start[0] <<std::endl;
-  std::cout<<"size of row array = "<<sizeof(row)/sizeof(row[0])<<std::endl;
+  //std::cout<<"size of row array = "<<sizeof(row)/sizeof(row[0])<<std::endl;
   for(int i=0; i<numQelements;i++){
     if(i>=start[j+1]){
       j++;
@@ -2576,34 +2585,42 @@ void OsiGrbSolverInterface::loadQuadraticObjective(const int numcols, const Coin
     std::cout << row[i]<<std::endl;
   }
   //printf("debug");
-  std::cout<<"size of row array = "<<sizeof(row)/sizeof(row[0])<<std::endl;
-  loadQuadraticObjective(numcols, numQelements, row, column, element);
+  //std::cout<<"size of row array = "<<sizeof(row)/sizeof(row[0])<<std::endl;
+  loadQuadraticObjective(numQelements, row, column, element);
   delete[] row;
 }
 
-void OsiGrbSolverInterface::loadQuadraticObjective(const int numcols, const int numQelements, const int *row, 
+void OsiGrbSolverInterface::loadQuadraticObjective(const int numQelements, const int *row, 
     const int *column, const double *element)
 {
+  int *rowQ = new int[numQelements];
+  int *colQ = new int[numQelements];
+  double *elements = new double[numQelements];
+
+  //int *rowQ = const_cast<int *> (row);
+  //int *colQ = const_cast <int *> (column);
+  //double *elements = const_cast <double *> (element);
   
-  int *rowQ = const_cast<int *> (row);
-  int *colQ = const_cast <int *> (column);
-  double *elements = const_cast <double *> (element);
+  //std::cout<<"size of elements array = "<<sizeof(elements)/sizeof(elements[0])<<std::endl;
   
-  std::cout<<"size of elements array = "<<sizeof(elements)/sizeof(elements[0])<<std::endl;
-  
-  std::cout<<"size of rowQ array = "<<sizeof(rowQ)/sizeof(rowQ[0])<<std::endl;
-  for (int i=0; i<sizeof(rowQ)/sizeof(rowQ[0]);i++){
-    std::cout<< "element in rowQ[] array = "<< rowQ[i];
+  //std::cout<<"size of rowQ array = "<<sizeof(rowQ)/sizeof(rowQ[0])<<std::endl;
+  for (int i=0; i<numQelements;i++){
+    rowQ[i]=row[i];
+    colQ[i]=column[i];
+    if(rowQ[i]==colQ[i]){elements[i]=0.5*element[i];}
+    else{elements[i]=element[i];}
+    std::cout<< rowQ[i] << " " << colQ[i] << " " << elements[i]<<std::endl;
   }
   std::cout<<std::endl;
-  for (int i=0; i<sizeof(colQ)/sizeof(colQ[0]);i++){
+  /*
+  for (int i=0; i<numQelements;i++){
     std::cout<< "element in colQ[] array = "<< colQ[i];
   }
-  int numqz=numcols;
+  int numqz=numQelements;
   std::cout<< "numqz= "<< numqz;
-  GUROBI_CALL("loadQuadraticObjective", GRBupdatemodel(getMutableLpPtr()));
-  std::cout<< "element in element[] array = "<< elements[0]<<std::endl;
   
+  //std::cout<< "element in element[] array = "<< elements[0]<<std::endl;
+  */
  /*
   int numqz=2;
   int rowQ[2]={1, 1};
@@ -2611,8 +2628,12 @@ void OsiGrbSolverInterface::loadQuadraticObjective(const int numcols, const int 
   double elements[2]={1, 2};
   int i;
   */
-  GUROBI_CALL("loadQuadraticObjective", GRBaddqpterms(getMutableLpPtr(), numqz, rowQ, colQ, elements));
-  
+  GUROBI_CALL("loadQuadraticObjective", GRBupdatemodel(getMutableLpPtr()));
+  GUROBI_CALL("loadQuadraticObjective", GRBwrite(getMutableLpPtr(), "farmerlp.mps"));
+  GUROBI_CALL("loadQuadraticObjective", GRBaddqpterms(getMutableLpPtr(), numQelements, rowQ, colQ, elements));
+  delete[] rowQ;
+  delete[] colQ;
+  delete[] elements;
 }
 
 
