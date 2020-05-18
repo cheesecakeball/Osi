@@ -1206,24 +1206,17 @@ int OsiSolverInterface::readMps(const char *filename,
       delete[] index;
     }
   }
-  printf("Successfully read linear part of mps");
-  std::cout<<"debug1"<<std::endl;
+  /// Reading from QUADOBJ section
   CoinBigIndex *start=NULL;
   int *column=NULL;
   double *element = NULL;
   // If 1 checks lower triangular (so off diagonal should be 2*Q)
   // if 2 makes lower triangular and assumes full Q (but adds off diagonals)
   int checkSymmetry=2;
-  std::cout<<filename<<std::endl;
   int numQPErrors=m.readQuadraticMps(NULL, start, column, element, checkSymmetry);
 
-  
-  //std::cout<<element[0]<<" "<<element[1]<<" "<<element[2]<<std::endl;
-  //int numcols=sizeof(*element)/sizeof(element[0]);
-  //std::cout<<"numofcols="<<numqcols<<std::endl;
   if (!numQPErrors)
   {
-    //std::cout<<"Start to load Quadratic objective"<< std::endl;
     loadQuadraticObjective(start, column, element);
   }
   delete[] start;
