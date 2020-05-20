@@ -2552,7 +2552,7 @@ void OsiGrbSolverInterface::loadQuadraticObjective(const CoinBigIndex *start,
   int numQelements=0;
   int numcolumn=getNumCols();
   for (int i=0; i<numcolumn*numcolumn;i++){
-    if(element[i]>-1000000000000 && element[i] < 1000000000000 && column[i]<=numcolumn && column[i]>=0){
+    if(element[i]>-1000000000000 && element[i] < 1000000000000 && element[i]!=0 && column[i]<=numcolumn && column[i]>=0){
       numQelements++;
     }
     else{
@@ -2577,7 +2577,6 @@ void OsiGrbSolverInterface::loadQuadraticObjective(const CoinBigIndex *start,
 void OsiGrbSolverInterface::loadQuadraticObjective(const int numQelements, const int *row, 
     const int *column, const double *element)
 {
-  
   int *rowQ = new int[numQelements];
   int *colQ = new int[numQelements];
   double *elementQ = new double[numQelements];
