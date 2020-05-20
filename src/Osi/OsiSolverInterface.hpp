@@ -1500,9 +1500,6 @@ public:
   virtual int readMps(const char *filename, const char *extension,
     int &numberSets, CoinSet **&sets);
 
-  //virtual int readQuadraticMps(const char *filename,
-  //const char *extension);
-
   /*! \brief Read a problem in GMPL format from the given filenames.
     
       The default implementation uses CoinMpsIO::readGMPL(). This capability

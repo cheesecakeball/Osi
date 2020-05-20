@@ -1206,36 +1206,37 @@ int OsiSolverInterface::readMps(const char *filename,
       delete[] index;
     }
   }
+  else
+  {
+    printf("Errors when reading linear MPS file\n");
+    return numberErrors;
+  }
+  
   /// Reading from QUADOBJ section
+
   CoinBigIndex *start=NULL;
   int *column=NULL;
   double *element = NULL;
   // If 1 checks lower triangular (so off diagonal should be 2*Q)
   // if 2 makes lower triangular and assumes full Q (but adds off diagonals)
-  int checkSymmetry=2;
+  int checkSymmetry=1;
   int numQPErrors=m.readQuadraticMps(NULL, start, column, element, checkSymmetry);
 
   if (!numQPErrors)
   {
     loadQuadraticObjective(start, column, element);
   }
+  else
+  {
+    printf("Errors when reading QUADOBJ in MPS file");
+  }
+  
   delete[] start;
   delete[] column;
   delete[] element;
+  
   return numQPErrors;
-  
 }
-/*
-/// Read from a quadratic MPS
-int OsiSolverInterface::readQuadraticMps(const char *filename,
-  const char *extension)
-{
-  CoinMpsIO mqp;
-  
-  return numErrors;
-}
-*/
-
 
 
 /* Read a problem in GMPL format from the given filenames.
@@ -1278,7 +1279,36 @@ int OsiSolverInterface::readGMPL(const char *filename, const char *dataname)
       delete[] index;
     }
   }
-  return numberErrors;
+  else
+  {
+    printf("Errors when reading linear MPS file\n");
+    return numberErrors;
+  }
+  
+  /// Reading from QUADOBJ section
+
+  CoinBigIndex *start=NULL;
+  int *column=NULL;
+  double *element = NULL;
+  // If 1 checks lower triangular (so off diagonal should be 2*Q)
+  // if 2 makes lower triangular and assumes full Q (but adds off diagonals)
+  int checkSymmetry=2;
+  int numQPErrors=m.readQuadraticMps(NULL, start, column, element, checkSymmetry);
+
+  if (!numQPErrors)
+  {
+    loadQuadraticObjective(start, column, element);
+  }
+  else
+  {
+    printf("Errors when reading QUADOBJ in MPS file\n");
+  }
+  
+  delete[] start;
+  delete[] column;
+  delete[] element;
+  
+  return numQPErrors;
 }
 /* Read a problem in MPS format from the given full filename.
    

@@ -453,6 +453,7 @@ public:
   //@}
   //@}
   
+  
   /// add qpterms in the objective function
   virtual void loadQuadraticObjective(const CoinBigIndex *start, 
     const int *column, const double *element);

@@ -258,7 +258,7 @@ void OsiGrbSolverInterface::initialSolve()
   std::cout<<"takeHine="<<takeHint<<std::endl;
   if (strength != OsiHintIgnore) {
     GUROBI_CALL("initialSolve", GRBgetintparam(GRBgetenv(lp), GRB_INT_PAR_METHOD, &prevalgorithm));
-    //GUROBI_CALL("initialSolve", GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_METHOD, takeHint ? GRB_METHOD_DUAL : GRB_METHOD_PRIMAL));
+    GUROBI_CALL("initialSolve", GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_METHOD, takeHint ? GRB_METHOD_DUAL : GRB_METHOD_PRIMAL));
   }
 
   /* set whether presolve or not */
@@ -266,24 +266,12 @@ void OsiGrbSolverInterface::initialSolve()
   getHintParam(OsiDoPresolveInInitial, takeHint, strength);
   if (strength != OsiHintIgnore)
     presolve = takeHint ? GRB_PRESOLVE_AUTO : GRB_PRESOLVE_OFF;
-  GUROBI_CALL("initialSolve", GRBwrite(lp, "farmerqp.mps"));
   GUROBI_CALL("initialSolve", GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, presolve));
 
   /* set whether output or not */
   GUROBI_CALL("initialSolve", GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_OUTPUTFLAG, (messageHandler()->logLevel() > 0)));
-  std::cout<<"start optimization in initialsolve()"<<std::endl;
   /* optimize */
-  
-
-  int a;
-  int b;
-  GUROBI_CALL("initialSolve", GRBgetintparam(GRBgetenv(lp), GRB_INT_PAR_METHOD, &a));
-  GUROBI_CALL("initialSolve", GRBgetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, &b));
-  std::cout<<"method is = "<<a<<std::endl;
-  std::cout<<"presolve is = "<<b<<std::endl;
-
   GUROBI_CALL("initialSolve", GRBoptimize(lp));
-  std::cout<<"after optimization"<<std::endl;
   /* reoptimize without presolve if status unclear */
   int stat;
   GUROBI_CALL("initialSolve", GRBgetintattr(lp, GRB_INT_ATTR_STATUS, &stat));
@@ -2562,8 +2550,9 @@ void OsiGrbSolverInterface::loadQuadraticObjective(const CoinBigIndex *start,
     const int *column, const double *element)
 {
   int numQelements=0;
-  for (int i=0; i<100000000;i++){
-    if(element[i]>-10000000000 && element[i] < 10000000000 && column[i]<=getNumCols() && column[i]>=0){
+  int numcolumn=getNumCols();
+  for (int i=0; i<numcolumn*numcolumn;i++){
+    if(element[i]>-1000000000000 && element[i] < 1000000000000 && column[i]<=numcolumn && column[i]>=0){
       numQelements++;
     }
     else{
@@ -2591,21 +2580,20 @@ void OsiGrbSolverInterface::loadQuadraticObjective(const int numQelements, const
   
   int *rowQ = new int[numQelements];
   int *colQ = new int[numQelements];
-  double *elements = new double[numQelements];
+  double *elementQ = new double[numQelements];
 
   for (int i=0; i<numQelements;i++){
     rowQ[i]=row[i];
     colQ[i]=column[i];
-    if(row[i]==column[i]){elements[i]=0.5*element[i];}
-    else{elements[i]=element[i];}
+    if(row[i]==column[i]){elementQ[i]=0.5*element[i];}
+    else{elementQ[i]=element[i];}
   }
   
   GUROBI_CALL("loadQuadraticObjective", GRBupdatemodel(getMutableLpPtr()));
-  //GUROBI_CALL("loadQuadraticObjective", GRBwrite(getMutableLpPtr(), "farmerlp.mps"));
-  GUROBI_CALL("loadQuadraticObjective", GRBaddqpterms(getMutableLpPtr(), numQelements, rowQ, colQ, elements));
-  //delete[] rowQ;
-  //delete[] colQ;
-  //delete[] elements;
+  GUROBI_CALL("loadQuadraticObjective", GRBaddqpterms(getMutableLpPtr(), numQelements, rowQ, colQ, elementQ));
+  delete[] rowQ;
+  delete[] colQ;
+  delete[] elementQ;
 }
 
 
